@@ -1,50 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Maut API Test</title>
+  <title>API Debug Test</title>
 </head>
 <body style="font-family:sans-serif; padding:20px;">
 
-<h2>🔥 Maut App Store API Test</h2>
+<h2>🔥 API Debug Test</h2>
+<button onclick="testAPI()">Test API</button>
 
-<button onclick="loadApps()">Load Apps</button>
-
-<div id="apps"></div>
+<pre id="output">Click button...</pre>
 
 <script>
-async function loadApps() {
-  const container = document.getElementById("apps");
-  container.innerHTML = "Loading...";
+async function testAPI() {
+  const out = document.getElementById("output");
+  out.innerText = "Loading...";
 
   try {
     const res = await fetch("https://dapper-kulfi-0015f5.netlify.app/.netlify/functions/apps");
-    const json = await res.json();
 
-    console.log("API:", json);
+    out.innerText += "\nStatus: " + res.status;
 
-    if (!json.data || !Array.isArray(json.data)) {
-      container.innerHTML = "❌ API format wrong";
-      return;
-    }
+    const text = await res.text(); // 👈 raw response
 
-    let html = "";
-
-    json.data.forEach(app => {
-      html += `
-        <div style="border:1px solid #ccc; padding:10px; margin:10px;">
-          <img src="${app.icon}" width="50"><br>
-          <b>${app.name}</b><br>
-          ${app.description}<br>
-          <a href="${app.file}" target="_blank">Download</a>
-        </div>
-      `;
-    });
-
-    container.innerHTML = html;
+    out.innerText += "\n\nRAW RESPONSE:\n" + text;
 
   } catch (err) {
+    out.innerText = "❌ ERROR:\n" + err;
     console.error(err);
-    container.innerHTML = "❌ Error fetching API";
   }
 }
 </script>
